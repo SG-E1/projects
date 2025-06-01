@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Proyectos Profesional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-project-diagram"></i> Gestor de Proyectos</h1>
+            <button id="theme-toggle" class="btn-theme"><i class="fas fa-moon"></i></button>
+        </header>
+
+        <nav class="sidebar">
+            <ul>
+                <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                <li data-section="projects"><i class="fas fa-folder"></i> Proyectos</li>
+                <li data-section="tasks"><i class="fas fa-tasks"></i> Tareas</li>
+                <li data-section="gantt"><i class="fas fa-chart-bar"></i> Diagrama Gantt</li>
+                <li data-section="analytics"><i class="fas fa-chart-line"></i> Rendimiento</li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- Sección Dashboard -->
+            <section id="dashboard" class="content-section active">
+                <h2><i class="fas fa-tachometer-alt"></i> Resumen del Proyecto</h2>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Proyectos Activos</h3>
+                        <p id="active-projects">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tareas Pendientes</h3>
+                        <p id="pending-tasks">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Índice de Productividad</h3>
+                        <p id="productivity-index">0%</p>
+                    </div>
+                </div>
+                <div class="recent-projects">
+                    <h3>Proyectos Recientes</h3>
+                    <div id="recent-projects-list"></div>
+                </div>
+            </section>
+
+            <!-- Sección Proyectos -->
+            <section id="projects" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-folder"></i> Gestión de Proyectos</h2>
+                    <button id="add-project-btn" class="btn-primary"><i class="fas fa-plus"></i> Nuevo Proyecto</button>
+                </div>
+                
+                <div class="project-form-container" id="project-form-container" style="display: none;">
+                    <form id="project-form">
+                        <div class="form-group">
+                            <label for="project-name">Nombre del Proyecto</label>
+                            <input type="text" id="project-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description">Descripción</label>
+                            <textarea id="project-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="project-start">Fecha Inicio</label>
+                                <input type="date" id="project-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="project-end">Fecha Fin</label>
+                                <input type="date" id="project-end" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="project-priority">Prioridad</label>
+                                <select id="project-priority">
+                                    <option value="low">Baja</option>
+                                    <option value="medium" selected>Media</option>
+                                    <option value="high">Alta</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar</button>
+                            <button type="button" id="cancel-project-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="projects-list" id="projects-list"></div>
+            </section>
+
+            <!-- Sección Tareas -->
+            <section id="tasks" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-tasks"></i> Gestión de Tareas</h2>
+                    <div class="task-actions">
+                        <select id="project-filter" class="form-control">
+                            <option value="">Todos los proyectos</option>
+                        </select>
+                        <button id="add-task-btn" class="btn-primary"><i class="fas fa-plus"></i> Nueva Tarea</button>
+                    </div>
+                </div>
+
+                <div class="task-form-container" id="task-form-container" style="display: none;">
+                    <form id="task-form">
+                        <div class="form-group">
+                            <label for="task-project">Proyecto</label>
+                            <select id="task-project" required>
+                                <option value="">Seleccione un proyecto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-name">Nombre de la Tarea</label>
+                            <input type="text" id="task-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-description">Descripción</label>
+                            <textarea id="task-description" rows="3"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="task-start">Fecha Inicio</label>
+                                <input type="date" id="task-start" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-end">Fecha Fin</label>
+                                <input type="date" id="task-end" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-priority">Prioridad</label>
+                                <select id="task-priority">
+                                    <option value="low">Baja</option>
+                                    <option value="medium" selected>Media</option>
+                                    <option value="high">Alta</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="task-status">Estado</label>
+                                <select id="task-status">
+                                    <option value="pending">Pendiente</option>
+                                    <option value="in-progress">En Progreso</option>
+                                    <option value="completed">Completada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar</button>
+                            <button type="button" id="cancel-task-btn" class="btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tasks-list" id="tasks-list"></div>
+            </section>
+
+            <!-- Sección Diagrama de Gantt -->
+            <section id="gantt" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Diagrama de Gantt</h2>
+                    <select id="gantt-project-filter" class="form-control">
+                        <option value="">Todos los proyectos</option>
+                    </select>
+                </div>
+                <div class="gantt-container">
+                    <svg id="gantt-chart"></svg>
+                </div>
+            </section>
+
+            <!-- Sección Análisis de Rendimiento -->
+            <section id="analytics" class="content-section">
+                <h2><i class="fas fa-chart-line"></i> Análisis de Rendimiento</h2>
+                <div class="analytics-row">
+                    <div class="analytics-card">
+                        <h3>Progreso General</h3>
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Distribución de Tareas</h3>
+                        <canvas id="tasks-distribution-chart"></canvas>
+                    </div>
+                </div>
+                <div class="analytics-row">
+                    <div class="analytics-card">
+                        <h3>Índice de Productividad</h3>
+                        <div class="productivity-metrics">
+                            <div class="metric">
+                                <span class="metric-value" id="completion-rate">0%</span>
+                                <span class="metric-label">Tareas Completadas</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="time-efficiency">0%</span>
+                                <span class="metric-label">Eficiencia de Tiempo</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="overall-score">0</span>
+                                <span class="metric-label">Puntuación General</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Tareas Atrasadas</h3>
+                        <div id="overdue-tasks-list" class="overdue-tasks"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/tasks.js"></script>
+    <script src="js/gantt.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
